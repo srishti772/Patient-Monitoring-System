@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "consumer-service": "file:",
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.4",
+    "sqlite3": "^5.1.7"
+  },
+  "name": "consumer-service",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
