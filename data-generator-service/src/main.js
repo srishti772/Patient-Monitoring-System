@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { generateMeasurement } = require("./data/measurementGenerator");
+const { generateMeasurement } = require("./measurementGenerator");
 
 async function sendPatientData(patientId) {
   try {
@@ -24,7 +24,7 @@ async function sendPatientData(patientId) {
   }
 }
 
-const patientIds = [1, 2]; // List of patient IDs
+const patientIds = [73, 2]; // List of patient IDs
 
 setInterval(() => {
   sendPatientData(patientIds[0]);

@@ -12,7 +12,19 @@ const {
   OXYGEN_SAT_MAX,
   RESP_RATE_MIN,
   RESP_RATE_MAX,
-} = require("./constants");
+} = require("./data/constants");
+
+function formatDateToSQLDate(date) {
+  // Converts a Date object to SQL DATETIME format
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
 
 function generateMeasurement(id) {
   const heartbeat =
@@ -41,6 +53,7 @@ function generateMeasurement(id) {
     Math.floor(Math.random() * (RESP_RATE_MAX - RESP_RATE_MIN + 1)) +
     RESP_RATE_MIN;
   const bodyMovement = Math.random() > 0.5 ? "active" : "rest";
+  const timestamp = formatDateToSQLDate(new Date());
 
   return {
     id,
@@ -51,7 +64,7 @@ function generateMeasurement(id) {
     oxygenSaturation,
     respirationRate,
     bodyMovement,
-    timestamp: new Date().toISOString(),
+    timestamp
   };
 }
 
