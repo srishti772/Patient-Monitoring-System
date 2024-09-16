@@ -29,3 +29,8 @@ const patientIds = [73, 2]; // List of patient IDs
 setInterval(() => {
   sendPatientData(patientIds[0]);
 }, 10000); // Send data every 10 seconds
+
+
+setInterval(() => {
+  sendPatientData(patientIds[1]);
+}, 10000); // Send data every 10 seconds

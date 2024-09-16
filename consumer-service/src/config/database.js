@@ -1,48 +1,51 @@
-require('dotenv').config(); 
- const mysql = require('mysql2/promise');
+require("dotenv").config();
+const sql = require("mssql");
 
 const DB_CONFIG = {
-   host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'password',
-  database: process.env.DB_NAME || 'patient_data',
+  user: "sa",
+  password: "yourStrong(!)Password",
+  server: "localhost", // or the IP address of your SQL Server container
+  database: "master",
+  options: {
+    encrypt: false, // Set to true if using Azure SQL Database
+    trustServerCertificate: true, // Set to true if using self-signed certificates
+  },
 };
 
 async function connectToDatabase() {
   try {
-    return await mysql.createConnection(DB_CONFIG);
+    return await sql.connect(DB_CONFIG);
   } catch (error) {
     throw new Error(`Failed to connect to the database: ${error.message}`);
   }
 }
 
 async function initializeDatabase() {
-  const connection = await connectToDatabase();
+  const pool = await connectToDatabase();
 
   const createTableQuery = `
-   CREATE TABLE IF NOT EXISTS patient_data (
-  patient_id INT,
-  timestamp DATETIME NOT NULL,
-  heartbeat INT NOT NULL,
-  pulse INT NOT NULL,
-  temperature DECIMAL(5, 1) NOT NULL,
-  blood_pressure_systolic INT NOT NULL,
-  blood_pressure_diastolic INT NOT NULL,
-  oxygen_saturation INT NOT NULL,
-  respiration_rate INT NOT NULL,
-  body_movement ENUM('active', 'rest') NOT NULL,
-  PRIMARY KEY (patient_id, timestamp)
-);`;
+  IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='patient_data' AND xtype='U')
+  CREATE TABLE patient_data (
+    patient_id INT,
+    timestamp DATETIME NOT NULL,
+    heartbeat INT NOT NULL,
+    pulse INT NOT NULL,
+    temperature DECIMAL(5, 1) NOT NULL,
+    blood_pressure_systolic INT NOT NULL,
+    blood_pressure_diastolic INT NOT NULL,
+    oxygen_saturation INT NOT NULL,
+    respiration_rate INT NOT NULL,
+    body_movement NVARCHAR(10) NOT NULL,
+    PRIMARY KEY (patient_id, timestamp)
+  );
+`;
 
   try {
-    await connection.execute(createTableQuery);
-    console.log('Database initialized successfully');
+    await pool.request().query(createTableQuery);
+    console.log("Database initialized successfully");
   } catch (error) {
-    console.error('Error initializing database:', error);
-  } finally {
-    await connection.end();
+    console.error("Error initializing database:", error);
   }
 }
-
 
 module.exports = { connectToDatabase, initializeDatabase };
