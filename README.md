@@ -1,19 +1,15 @@
-# Patient Data Simulator
-
-This project simulates patient data for testing and analysis purposes. The data is sent to RabbitMQ queues, which are then consumed and stored in a SQL database. The simulated data includes various Key Performance Indicators (KPIs) that represent common health metrics.
-
 # Patient Monitoring System
 
 This project is a comprehensive system designed to monitor and manage patient health data through multiple services. The system comprises three main components:
 
-1. **Consumer Service**: Consumes messages from RabbitMQ queues, stores data in an SQL Server database, and sends data to Power BI for streaming.
-2. **Patient Data Generator**: Simulates and sends patient health metrics to an API endpoint at regular intervals.
-3. **Producer Service**: Receives patient data through an API endpoint, publishes the data to RabbitMQ, and handles errors.
+1. **Patient Data Generator**: Simulates and sends patient health metrics to an API endpoint at regular intervals.
+2. **Producer Service**: Receives patient data through an API endpoint, publishes the data to RabbitMQ, and handles errors.
+3. **Consumer Service**: Consumes messages from RabbitMQ queues, stores data in an SQL Server database, and sends data to Power BI for streaming.
 
 ## Folder Structure
 
 consumer-service/: Contains the Consumer Service.
-patient-data-simulator/: Contains the Patient Data Generator.
+data-generator-service/: Contains the Patient Data Generator.
 producer-service/: Contains the Producer Service.
 
 ## Key Performance Indicators (KPIs) and Their Ranges
@@ -61,7 +57,7 @@ The Consumer Service also sends processed data to Power BI for visualization and
 
 ### 1. Patient Data Generator
 
-**_Role_**: Simulates and sends patient health metrics to an API endpoint at regular intervals.
+**Role**: Simulates and sends patient health metrics to an API endpoint at regular intervals.
 
 **Interactions:**
 Generates simulated patient data.
