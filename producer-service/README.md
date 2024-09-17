@@ -1,4 +1,4 @@
-# Producer Service for Patient Data Simulator
+# Producer Service
 
 This Node.js service receives patient data through an API endpoint, publishes the data to RabbitMQ using direct exchanges and routing keys, and handles errors.
 

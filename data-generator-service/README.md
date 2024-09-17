@@ -1,4 +1,4 @@
-# Patient Monitoring Data Generator
+# Data Generator
 
 This project is a patient monitoring data generator that simulates and sends patient health metrics to a specified API endpoint at regular intervals. It uses random generation of values to mimic real-time monitoring of patient vitals, including heartbeat, pulse, temperature, blood pressure, oxygen saturation, and respiration rate.
 
