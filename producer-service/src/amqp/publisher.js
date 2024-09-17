@@ -15,10 +15,10 @@ async function getOrCreateChannel(exchangeName, queueName, routingKey) {
   return channel;
 }
 
-async function publishMessages(patient_data) {
+async function publishMessages(queue_name,patient_data) {
   const exchangeName = "patient_data_exchange";
-  const queueName = `P_${patient_data.id}`;
-  const routingKey = `P_${patient_data.id}`;
+  const queueName = queue_name;
+  const routingKey = queue_name;
 
   try {
     const channel = await getOrCreateChannel(

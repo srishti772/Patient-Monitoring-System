@@ -1,17 +1,15 @@
 const {
   HEARTBEAT_MIN,
   HEARTBEAT_MAX,
-  PULSE_VARIANCE,
+  PULSE_MIN,
+  PULSE_MAX,
   TEMP_MIN,
   TEMP_MAX,
   BP_SYSTOLIC_MIN,
   BP_SYSTOLIC_MAX,
   BP_DIASTOLIC_MIN,
   BP_DIASTOLIC_MAX,
-  OXYGEN_SAT_MIN,
-  OXYGEN_SAT_MAX,
-  RESP_RATE_MIN,
-  RESP_RATE_MAX,
+
 } = require("./data/constants");
 
 function formatDateToSQLDate(date) {
@@ -26,46 +24,42 @@ function formatDateToSQLDate(date) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-function generateMeasurement(id) {
-  const heartbeat =
-    Math.floor(Math.random() * (HEARTBEAT_MAX - HEARTBEAT_MIN + 1)) +
-    HEARTBEAT_MIN;
-  const pulse =
-    heartbeat +
-    Math.floor(Math.random() * (PULSE_VARIANCE * 2 + 1)) -
-    PULSE_VARIANCE;
-  const temperature = (
-    Math.random() * (TEMP_MAX - TEMP_MIN) +
-    TEMP_MIN
-  ).toFixed(1);
-  const bloodPressure = {
-    systolic:
-      Math.floor(Math.random() * (BP_SYSTOLIC_MAX - BP_SYSTOLIC_MIN + 1)) +
-      BP_SYSTOLIC_MIN,
-    diastolic:
-      Math.floor(Math.random() * (BP_DIASTOLIC_MAX - BP_DIASTOLIC_MIN + 1)) +
-      BP_DIASTOLIC_MIN,
-  };
-  const oxygenSaturation =
-    Math.floor(Math.random() * (OXYGEN_SAT_MAX - OXYGEN_SAT_MIN + 1)) +
-    OXYGEN_SAT_MIN;
-  const respirationRate =
-    Math.floor(Math.random() * (RESP_RATE_MAX - RESP_RATE_MIN + 1)) +
-    RESP_RATE_MIN;
-  const bodyMovement = Math.random() > 0.5 ? "active" : "rest";
+function generateMeasurement(id, deviceType) {
   const timestamp = formatDateToSQLDate(new Date());
 
-  return {
-    id,
-    heartbeat,
-    pulse,
-    temperature,
-    bloodPressure,
-    oxygenSaturation,
-    respirationRate,
-    bodyMovement,
-    timestamp
-  };
+  // Generate different measurements based on the device type
+  switch (deviceType) {
+    case 'heartbeat':
+      return {
+        id,
+        deviceType: 'heartbeat',
+        heartbeat: Math.floor(Math.random() * (HEARTBEAT_MAX - HEARTBEAT_MIN + 1)) + HEARTBEAT_MIN,
+        pulse: Math.floor(Math.random() * (PULSE_MAX - PULSE_MIN + 1)) + PULSE_MIN,
+        timestamp,
+      };
+
+    case 'temperature':
+      return {
+        id,
+        deviceType: 'temperature',
+        temperature: (Math.random() * (TEMP_MAX - TEMP_MIN) + TEMP_MIN).toFixed(1),
+        timestamp,
+      };
+
+    case 'bloodPressure':
+      return {
+        id,
+        deviceType: 'bloodPressure',
+            systolic: Math.floor(Math.random() * (BP_SYSTOLIC_MAX - BP_SYSTOLIC_MIN + 1)) + BP_SYSTOLIC_MIN,
+          diastolic: Math.floor(Math.random() * (BP_DIASTOLIC_MAX - BP_DIASTOLIC_MIN + 1)) + BP_DIASTOLIC_MIN,
+      
+        timestamp,
+      };
+
+
+    default:
+      throw new Error(`Unsupported device type: ${deviceType}`);
+  }
 }
 
 module.exports = { generateMeasurement };

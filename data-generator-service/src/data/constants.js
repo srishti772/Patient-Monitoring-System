@@ -4,6 +4,8 @@ const HEARTBEAT_MAX = 100;
 
 // Pulse variance
 const PULSE_VARIANCE = 5;
+const PULSE_MIN = 40;
+const PULSE_MAX = 120;
 
 // Temperature (°C)
 const TEMP_MIN = 36.5;
@@ -27,6 +29,8 @@ module.exports = {
     HEARTBEAT_MIN,
     HEARTBEAT_MAX,
     PULSE_VARIANCE,
+    PULSE_MIN,
+    PULSE_MAX,
     TEMP_MIN,
     TEMP_MAX,
     BP_SYSTOLIC_MIN,

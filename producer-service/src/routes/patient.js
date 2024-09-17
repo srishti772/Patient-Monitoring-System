@@ -13,9 +13,26 @@ router.post('/send', async (req, res) => {
         return res.status(400).json({ error: 'Patient ID is required' });
     }
 
+        
+    
+
+
     try {
         // Publish the patient data to RabbitMQ
-        await publishMessages(patientData);
+        let queueName;
+        switch (patientData.deviceType) {
+            case 'heartbeat':
+                queueName = 'heartbeat_queue';
+                break;
+            case 'temperature':
+                queueName = 'temperature_queue';
+                break;
+            case 'bloodPressure':
+                    queueName = 'bloodPressure_queue';
+                    break;
+            default:
+                return res.status(400).json({ error: `Unsupported device type: ${patientData.deviceType}` });}
+        await publishMessages(queueName, patientData);
 
         res.status(200).json({ message: 'Patient data processing started', data: patientData });
     } catch (error) {
