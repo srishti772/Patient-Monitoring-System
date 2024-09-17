@@ -1,7 +1,6 @@
 const sql = require("mssql");
-require('dotenv').config(); // Load environment variables
+require('dotenv').config(); 
 
-// Access Power BI URLs from environment variables
 const POWER_BI_URLS = {
   heartbeat: process.env.POWER_BI_URLS_heartbeat,
   bloodPressure: process.env.POWER_BI_URLS_bloodPressure,
@@ -13,7 +12,6 @@ async function saveToDatabase(dbConnection, data) {
     let query;
     let powerBiUrl;
 
-    // Transform data to match Power BI streaming dataset schema
     const powerBiData = [];
 
     switch (data.deviceType) {
@@ -29,7 +27,7 @@ async function saveToDatabase(dbConnection, data) {
           patient_id: data.id,
           heartbeat: data.heartbeat,
           pulse: data.pulse,
-          timestamp: new Date(data.timestamp).toISOString(), // Ensure the timestamp is in the correct format
+          timestamp: new Date(data.timestamp).toISOString(), 
         });
 
         await dbConnection
@@ -48,7 +46,6 @@ async function saveToDatabase(dbConnection, data) {
         `;
         powerBiUrl = POWER_BI_URLS.bloodPressure;
 
-        // Add the transformed data to the array for Power BI
         powerBiData.push({
           patient_id: data.id,
           systolic: data.systolic,
@@ -72,7 +69,6 @@ async function saveToDatabase(dbConnection, data) {
         `;
         powerBiUrl = POWER_BI_URLS.temperature;
 
-        // Add the transformed data to the array for Power BI
         powerBiData.push({
           patient_id: data.id,
           temperature: data.temperature,
@@ -91,7 +87,6 @@ async function saveToDatabase(dbConnection, data) {
         throw new Error(`Unknown device type: ${data.deviceType}`);
     }
 
-    // Send transformed data to Power BI
     if (powerBiUrl) {
       await fetch(powerBiUrl, {
         method: "POST",

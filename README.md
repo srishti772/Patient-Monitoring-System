@@ -2,6 +2,20 @@
 
 This project simulates patient data for testing and analysis purposes. The data is sent to RabbitMQ queues, which are then consumed and stored in a SQL database. The simulated data includes various Key Performance Indicators (KPIs) that represent common health metrics.
 
+# Patient Monitoring System
+
+This project is a comprehensive system designed to monitor and manage patient health data through multiple services. The system comprises three main components:
+
+1. **Consumer Service**: Consumes messages from RabbitMQ queues, stores data in an SQL Server database, and sends data to Power BI for streaming.
+2. **Patient Data Generator**: Simulates and sends patient health metrics to an API endpoint at regular intervals.
+3. **Producer Service**: Receives patient data through an API endpoint, publishes the data to RabbitMQ, and handles errors.
+
+## Folder Structure
+
+consumer-service/: Contains the Consumer Service.
+patient-data-simulator/: Contains the Patient Data Generator.
+producer-service/: Contains the Producer Service.
+
 ## Key Performance Indicators (KPIs) and Their Ranges
 
 ### 1. Heartbeat (Heart Rate)
@@ -25,111 +39,98 @@ This project simulates patient data for testing and analysis purposes. The data 
 - **Diastolic**: 70 to 90 mmHg
 - **Reason**: Normal blood pressure for adults is around 120/80 mmHg. Systolic pressure is considered normal up to around 130 mmHg, and diastolic pressure up to around 90 mmHg.
 
-### 5. Oxygen Saturation
+## Communication Flow
 
-- **Range**: 95% to 100%
-- **Reason**: Normal oxygen saturation levels for healthy individuals are typically between 95% and 100%. Levels below 95% might indicate issues with oxygenation.
+### Data Generation:
 
-### 6. Respiration Rate
+The Patient Data Generator periodically creates simulated patient health data and sends it to the Producer Service via an API.
 
-- **Range**: 12 to 20 breaths per minute
-- **Reason**: The normal resting respiration rate for adults ranges from 12 to 20 breaths per minute. Rates outside this range can indicate respiratory issues or conditions.
+### Data Publishing:
 
-### 7. Body Movement
+The Producer Service receives the data and publishes it to RabbitMQ.
 
-- **Values**: 'active' or 'rest'
-- **Reason**: This KPI simulates whether the patient is currently active or at rest. It provides context to other measurements, such as higher pulse rates during activity.
+### Data Consumption:
 
-## Project Structure
+The Consumer Service subscribes to RabbitMQ queues, processes the incoming messages, and stores the data in SQL Server.
 
-The project is organized into the following directory structure:
-patient-data-simulator/
-├── src/
-├── constants.js # Contains KPI ranges and constants used in data generation
-├── measurementGenerator.js # Generates simulated patient measurements
-├── amqpConnection.js # Manages RabbitMQ connections and channels
-├── publisher.js # Publishes messages to RabbitMQ exchanges
-├── consumer.js # Consumes messages from RabbitMQ queues and stores them in SQL
-└── main.js # Entry point for running the publisher and consumer
-├── .env # Environment variables (e.g., RabbitMQ URL)
-├── package.json # Project metadata and dependencies
-├── README.md # Project documentation
+### Data Visualization:
 
-### `src/constants.js`
+The Consumer Service also sends processed data to Power BI for visualization and real-time monitoring.
 
-Contains the ranges for various KPIs used in the data simulation. This file centralizes configuration values and constants.
+## Services
 
-### `src/measurementGenerator.js`
+### 1. Patient Data Generator
 
-Defines the `generateMeasurement` function that creates simulated patient data based on predefined KPI ranges. This data includes metrics like heartbeat, pulse, temperature, blood pressure, oxygen saturation, respiration rate, and body movement.
+**_Role_**: Simulates and sends patient health metrics to an API endpoint at regular intervals.
 
-### `src/amqpConnection.js`
+**Interactions:**
+Generates simulated patient data.
+Sends data to the Producer Service via HTTP POST requests.
 
-Handles RabbitMQ connection setup and channel creation. Includes functions to connect to RabbitMQ and create channels with specific queues.
+**Technology Stack:**
+Node.js
 
-### `src/publisher.js`
+**Usage:**
 
-Implements the logic to publish messages to RabbitMQ exchanges. It uses `createChannel` from `amqpConnection.js` to establish channels and send simulated patient data. Messages are published at regular intervals.
-
-### `src/consumer.js`
-
-Listens for messages from RabbitMQ queues and processes them. This script is responsible for consuming patient data from queues and storing it into a SQL database. It also handles error management.
-
-### `src/main.js`
-
-The entry point of the application. It sets up and starts both the publisher and consumer processes. It generates random patient IDs to publish data to different queues and ensures that the consumer processes data from all queues.
-
-### `.env`
-
-Contains environment variables such as the RabbitMQ URL. Ensure to create this file in the root directory and add your RabbitMQ connection string.
-
-### `package.json`
-
-Lists project dependencies and includes scripts for development. Contains information about the project, including the main entry point and scripts for running the application.
-
-### `README.md`
-
-Provides documentation about the project, including setup instructions, project structure, and details about the KPIs used in the simulation.
-
-### `LICENSE`
-
-Includes license information for the project.
-
-## Getting Started
-
-To run the project locally, follow these steps:
-
-1. **Install Dependencies**:
-
+1. Start the generator with:
    ```bash
-   npm install
-
+   npm start
    ```
+2. Configure the API endpoint and intervals in the script.
 
-2. **Create a .env File: Create a .env file in the root directory and add your RabbitMQ URL:**:
+### 2. Producer Service
 
+**Role**: Receives patient data from the Data Generator, publishes it to RabbitMQ, and handles errors.
+
+**Interactions:**
+Receives data from the Patient Data Generator.
+Publishes data to RabbitMQ using direct exchanges and routing keys.
+
+**Technology Stack:**
+Node.js
+RabbitMQ
+
+**Usage:**
+
+1. Start the service with:
    ```bash
-    RABBITMQ_URL=amqp://localhost
-
+   npm start
    ```
+2. Configure RabbitMQ details in the .env file.
 
-3. **Start the Application: Use nodemon to run the application:**:
+### 3. Consumer Service
+
+**Role:** Consumes patient data messages from RabbitMQ, stores them in an SQL Server database, and sends the data to Power BI for visualization.
+
+**Interactions:**
+
+- Receives data from RabbitMQ queues.
+- Stores data in SQL Server.
+- Sends data to Power BI for real-time analytics.
+
+**Technology Stack:**
+
+- Node.js
+- RabbitMQ
+- SQL Server
+- Power BI
+
+**Usage:**
+
+1. Start the service with:
    ```bash
-    npm start
+   npm start
    ```
+2. Ensure the .env file is configured with RabbitMQ and SQL Server details.
 
-### `Contributing`
+### License
 
-Feel free to open issues or submit pull requests if you have suggestions or improvements.
+This project is licensed under the MIT License. See the LICENSE file for details.
 
-### `LICENSE`
+### Contributing
 
-This project is licensed under the ISC License - see the LICENSE file for details.
+Contributions are welcome! Please open an issue or submit a pull request for any improvements.
 
-### Summary
+### Contact
 
-- **Project Structure**: Provides a detailed breakdown of the directory and file structure, explaining the purpose of each component.
-- **Getting Started**: Instructions on how to set up and run the project.
-- **Contributing and License**: Information on how to contribute and licensing details.
-
-This README.md gives a comprehensive overview of the project and guides users through understanding and running it.
+For questions or support, please contact [Srishti Ahirwar](mailto:ahirwar.s@northeastern.edu).
