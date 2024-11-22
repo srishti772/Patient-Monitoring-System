@@ -1,0 +1,83 @@
+version: '3'
+services:
+  data-generator:
+    image: srishti77/patient-data-simulator-data-generator-service:latest
+    networks:
+      - public-network
+    depends_on:
+        producer-service:
+          condition: service_healthy
+    environment:
+      - API_URL=http://producer-service:3001/api/send/  
+  
+  producer-service:
+    image: srishti77/patient-data-simulator-producer-service:1.0.0
+    networks:
+      - public-network
+      - private-network 
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq  
+    ports:
+      - "3001:3001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      retries: 9
+      start_period: 120s
+
+  rabbitmq:
+    image: rabbitmq:3.10.5-management
+    networks:
+      - private-network
+    ports:
+      - "5672:5672"  
+      - "15672:15672"  
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q check_running || exit 1"]
+      interval: 30s
+      retries: 9
+      start_period: 120s
+
+  consumer-service:
+    image: srishti77/patient-data-simulator-consumer-service:latest
+    networks:
+      - private-network
+    depends_on:
+      sql-server:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq  
+      - DB_USER=sa
+      - DB_PASSWORD=yourStrong(!)Password
+      - DB_SERVER=sql-server  
+      - DB_DATABASE=master
+      - DB_ENCRYPT=false
+      - DB_TRUST_SERVER_CERTIFICATE=true
+    restart: on-failure
+
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+      - private-network
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=yourStrong(!)Password  
+    ports:
+      - "1433:1433"  
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'yourStrong(!)Password' -Q 'SELECT 1' -N -C || exit 1"]
+      interval: 30s
+      retries: 9
+      start_period: 120s
+
+
+networks:
+  public-network:
+    driver: bridge
+  private-network:
+    driver: bridge
